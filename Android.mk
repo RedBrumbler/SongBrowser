@@ -49,7 +49,7 @@ LOCAL_MODULE := questui
 LOCAL_EXPORT_C_INCLUDES := extern/questui
 LOCAL_SRC_FILES := extern/libquestui.so
 include $(PREBUILT_SHARED_LIBRARY)
-# Creating prebuilt for dependency: songloader - version: 0.6.2
+# Creating prebuilt for dependency: songloader - version: 0.6.3
 include $(CLEAR_VARS)
 LOCAL_MODULE := songloader
 LOCAL_EXPORT_C_INCLUDES := extern/songloader
@@ -82,7 +82,7 @@ LOCAL_SHARED_LIBRARIES += songloader
 LOCAL_SHARED_LIBRARIES += android-libsong_data_core_rust
 LOCAL_STATIC_LIBRARIES += cryptopp
 LOCAL_LDLIBS += -llog -lz
-LOCAL_CFLAGS += -DID='"SongBrowser"' -DVERSION='"0.1.0"' -I'./shared' -I'./extern' -Wno-inaccessible-base -O2
+LOCAL_CFLAGS += -DID='"SongBrowser"' -DVERSION='"1.0.0"' -I'./shared' -I'./extern' -Wno-inaccessible-base -O2
 LOCAL_C_INCLUDES += ./include ./src ./extern ./extern/codegen/include ./extern/libil2cpp/il2cpp/libil2cpp ./shared
 LOCAL_CPP_FEATURES += rtti exceptions
 include $(BUILD_SHARED_LIBRARY)
