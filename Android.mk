@@ -75,7 +75,7 @@ LOCAL_SHARED_LIBRARIES += songloader
 LOCAL_SHARED_LIBRARIES += android-libsong_data_core_rust
 LOCAL_SHARED_LIBRARIES += codegen
 LOCAL_LDLIBS += -llog
-LOCAL_CFLAGS += -DID='"SongBrowser"' -DVERSION='"0.1.0"' -I'./shared' -I'./extern' -Wno-inaccessible-base -O2
+LOCAL_CFLAGS += -DID='"SongBrowser"' -DVERSION='"1.0.1"' -I'./shared' -I'./extern' -Wno-inaccessible-base -O2
 LOCAL_C_INCLUDES += ./include ./src ./extern ./extern/codegen/include ./extern/libil2cpp/il2cpp/libil2cpp ./shared
 LOCAL_CPP_FEATURES += rtti exceptions
 include $(BUILD_SHARED_LIBRARY)
