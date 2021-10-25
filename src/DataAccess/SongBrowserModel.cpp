@@ -548,7 +548,7 @@ namespace SongBrowser
         INFO("Starting filtering songs by %s", SongFilterModeToString(config.filterMode).c_str());
         auto stopwatch = System::Diagnostics::Stopwatch::New_ctor();
         stopwatch->Start();
-
+/*     >>>>>>> NOT REQUIRED IN QUEST
         if (config.filterMode == SongFilterMode::Requirements)
         {
             auto modList = Modloader::getMods();
@@ -559,7 +559,7 @@ namespace SongBrowser
                 config.filterMode = SongFilterMode::None;
             }
         }
-
+*/
         switch (config.filterMode)
         {
             case SongFilterMode::Favorites:
