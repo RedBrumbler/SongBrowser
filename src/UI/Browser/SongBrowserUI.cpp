@@ -413,7 +413,7 @@ namespace SongBrowser::UI
                 }, p.first);
             UIUtils::SetButtonTextSize(filterButton->button, filterButtonFontSize);
             UIUtils::ToggleWordWrapping(filterButton->button, false);
-
+/*     >>>>>>> NOT REQUIRED IN QUEST
             // don't allow to filter for reqs if no cjd
             if (p.second == SongFilterMode::Requirements)
             {
@@ -427,7 +427,7 @@ namespace SongBrowser::UI
                 else filterButton->button->set_interactable(false);
 
             }
-
+*/
             filterButtonGroup->Add(filterButton);
             i++;
         }
