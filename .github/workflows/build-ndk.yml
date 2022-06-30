@@ -90,7 +90,7 @@ jobs:
         workflow: main.yml
         name: QPM-ubuntu-x64
         path: QPM
-        repo: sc2ad/QuestPackageManager
+        repo: RedBrumbler/QuestPackageManager
       
     # collect all dependencies, I assume for reading back what was used to build a specific .so
     - name: QPM Collect
