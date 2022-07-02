@@ -1,19 +1,28 @@
 name: NDK build
 
-env:
-  module_id: songbrowser
-  qmodName: SongBrowser
-  cache-name: songbrowser_cache
-
 on:
+  workflow_dispatch:
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+    paths-ignore:
+      - '**.yml'
+      - '!.github/workflows/BuildMod.yml'
+      - '**.json'
+      - '!qpm.json'
+      - '**.ps1'
+      - '!build.ps1'
+      - '!buildQMOD.ps1'
+      - '**.md'
+      - '.gitignore'
+      - '**.zip'
 
+env:
+     module_id: SongBrower
+     version: 0.1.0-Dev.${{ github.run_number }}
+#     ndkname: android-ndk-r24
+    
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     
     steps:
     - uses: actions/checkout@v2
@@ -24,10 +33,35 @@ jobs:
 
     - uses: seanmiddleditch/gha-setup-ninja@v3
 
+#    - name: Install Powershell
+#      run: sudo apt-get install -y powershell
+
+#    - name: Cache Android NDK
+#      id: cache-ndk
+#      uses: actions/cache@v2
+#      env:
+#        cache-name: cache-ndk
+#      with:
+#        path: ndk
+#        key: ${{ runner.os }}-${{ env.cache-name }}-${{ env.ndkname }}
+#        restore-keys: |
+#          ${{ runner.os }}-${{ env.cache-name }}-${{ env.ndkname }}
+    
+#    - name: Install Android NDK
+#      if: steps.cache-ndk.outputs.cache-hit != 'true'
+#      run: |
+#        wget -q -O ndk.zip https://dl.google.com/android/repository/${ndkname}-linux-x86_64.zip
+#        unzip -q ndk.zip
+#        mv ${ndkname} ndk
+      
+#    - name: Create ndkpath.txt
+#      run: |
+#        cd ndk
+#        pwd > ${GITHUB_WORKSPACE}/ndkpath.txt
+
     - name: Create ndkpath.txt
       run: |
         echo "$ANDROID_NDK_LATEST_HOME" > ${GITHUB_WORKSPACE}/ndkpath.txt
-        cat ${GITHUB_WORKSPACE}/ndkpath.txt
     - name: Get QPM
       if: steps.cache-qpm.outputs.cache-hit != 'true'
       uses: dawidd6/action-download-artifact@v2
@@ -42,6 +76,7 @@ jobs:
       run: |
         chmod +x ./QPM/qpm-rust
         ./QPM/qpm-rust collapse
+        
     - name: QPM Dependencies Cache
       id: cache-qpm-deps
       uses: actions/cache@v2
@@ -49,38 +84,31 @@ jobs:
         cache-name: cache-qpm-deps
       with:
         path: /home/runner/.local/share/QPM-Rust/cache
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('qpm.json') }}
+        key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('qpm.json', '.github/BuildQSounds.yml') }}
         restore-keys: |
-          ${{ runner.os }}-build-${{ env.cache-name }}-
-          ${{ runner.os }}-build-
-          ${{ runner.os }}-
+          ${{ runner.os }}-${{ env.cache-name }}-
+          ${{ runner.os }}-${{ env.cache-name }}
+      
     - name: QPM Restore
       run: |
-        chmod +x ./QPM/qpm-rust
         ./QPM/qpm-rust restore
-    - name: QPM Legacy fix
+    - name: Check dependency Folders
       run: |
-        chmod +x ./QPM/qpm-rust
-        ./QPM/qpm-rust cache legacy-fix
-    - name: List Post Restore
-      run: |
-        echo includes:
-        ls -la ${GITHUB_WORKSPACE}/extern/includes
-        echo libs:
-        ls -la ${GITHUB_WORKSPACE}/extern/libs
-        echo cache:
-        ls -la $HOME/.local/share/QPM-Rust/cache
+        echo "Checking extern includes"
+        ls -lh ${GITHUB_WORKSPACE}/extern/includes
+        echo ""
+        echo "Checking libs"
+        ls -lh ${GITHUB_WORKSPACE}/extern/libs
+        echo ""
+        echo "Checking QPM-Rust/cache Folder"
+        ls -lh $HOME/.local/share/QPM-Rust/cache
+        echo ""
     - name: Build
       run: |
         cd ${GITHUB_WORKSPACE}
-        pwsh -Command ./build.ps1
-# TODO: Generate QMOD
-#        ./QPM/qpm-rust qmod build
-
-
-    - name: Create Qmod
-      run: |
-        pwsh -Command ./createqmod.ps1 ${{env.qmodName}}
+        ./QPM/qpm-rust package edit --version ${{ env.version }}
+        ./QPM/qpm-rust qmod build
+        pwsh -Command ./build.ps1 --actions
     - name: Get Library Name
       id: libname
       run: |
@@ -88,6 +116,10 @@ jobs:
         pattern="lib${module_id}*.so"
         files=( $pattern )
         echo ::set-output name=NAME::"${files[0]}"
+    - name: Package QMOD
+      run: |
+        cd ${GITHUB_WORKSPACE}
+        pwsh -Command ./buildQMOD.ps1 -package
     - name: Upload non-debug artifact
       uses: actions/upload-artifact@v2
       with:
@@ -95,9 +127,18 @@ jobs:
         path: ./build/${{ steps.libname.outputs.NAME }}
         if-no-files-found: error
 
-    - name: Upload qmod artifact
+
+    - name: Upload debug artifact
       uses: actions/upload-artifact@v2
       with:
-        name: ${{env.qmodName}}.qmod
-        path: ./${{ env.qmodName }}.qmod
+        name: debug_${{ steps.libname.outputs.NAME }}
+        path: ./build/debug/${{ steps.libname.outputs.NAME }}
         if-no-files-found: error
+
+
+    - name: Upload QMOD
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ env.module_id }}-(UNZIP-for-QMOD).qmod
+        path: ./${{ env.module_id }}_${{ env.version }}.qmod
+        if-no-files-found: warn
