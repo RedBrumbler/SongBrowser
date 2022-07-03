@@ -1,12 +1,23 @@
-name: NDK build PR
+name: NDK build
 
 on:
   workflow_dispatch:
-  pull_request:
+  push:
+    paths-ignore:
+      - '**.yml'
+      - '!.github/workflows/BuildMod.yml'
+      - '**.json'
+      - '!qpm.json'
+      - '**.ps1'
+      - '!build.ps1'
+      - '!buildQMOD.ps1'
+      - '**.md'
+      - '.gitignore'
+      - '**.zip'
 
 env:
      module_id: SongBrowser
-     version_num: 0.1.0
+     version: 0.2.0.${{ github.run_number }}
     
 jobs:
   build:
@@ -20,26 +31,7 @@ jobs:
         lfs: true
 
     - uses: seanmiddleditch/gha-setup-ninja@v3
-    
-    - name: Extract branch name
-      if: github.event_name != 'pull_request'
-      shell: bash
-      run: echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_ENV
-      id: extract_branch
 
-    # extract branch name on pull request
-    - name: Print branch name
-      if: github.event_name == 'pull_request'
-      run: echo "BRANCH_NAME=$(echo ${GITHUB_HEAD_REF})" >> $GITHUB_ENV
-
-    - name: Set version
-      run: echo "version=$(echo $version_num-$BRANCH_NAME.${{ github.run_number }})" >> $GITHUB_ENV
-
-    # print branch name and version
-    - name: Get branch name
-      run: |
-        echo 'The branch name is' $BRANCH_NAME
-        echo 'The version is' $version
     - name: Create ndkpath.txt
       run: |
         echo "$ANDROID_NDK_LATEST_HOME" > ${GITHUB_WORKSPACE}/ndkpath.txt
