@@ -1,30 +1,16 @@
-name: NDK build
+name: NDK build PR
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ master, dev ]
-    paths-ignore:
-      - '**.yml'
-      - '!.github/workflows/BuildMod.yml'
-      - '**.json'
-      - '!qpm.json'
-      - '**.ps1'
-      - '!buildQMOD.ps1'
-      - '**.md'
-      - '.gitignore'
   pull_request:
-    branches: [ master, dev ]
 
 env:
      module_id: SongBrowser
-     BSVersion: 1.21.0
-     version: 0.2.2-Dev.${{ github.run_number }}
-     ndkname: android-ndk-r24
+     version_num: 0.1.0
     
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     
     steps:
     - uses: actions/checkout@v2
@@ -34,47 +20,29 @@ jobs:
         lfs: true
 
     - uses: seanmiddleditch/gha-setup-ninja@v3
-
-    #- name: Install Powershell
-    #  run: sudo apt-get install -y powershell
-
-    #- name: Cache Android NDK
-    #  id: cache-ndk
-    #  uses: actions/cache@v2
-    #  env:
-    #    cache-name: cache-ndk
-    #  with:
-    #    path: ndk
-    #    key: ${{ runner.os }}-${{ env.cache-name }}-${{ env.ndkname }}
-    #    restore-keys: |
-    #      ${{ runner.os }}-${{ env.cache-name }}-${{ env.ndkname }}
     
-    #- name: Install Android NDK
-    #  if: steps.cache-ndk.outputs.cache-hit != 'true'
-    #  run: |
-    #    wget -q -O ndk.zip https://dl.google.com/android/repository/${ndkname}-linux.zip
-    #    unzip -q ndk.zip
-    #    mv ${ndkname} ndk
-      
-    #- name: Create ndkpath.txt
-    #  run: |
-    #    cd ndk
-    #    pwd > ${GITHUB_WORKSPACE}/ndkpath.txt
-      
+    - name: Extract branch name
+      if: github.event_name != 'pull_request'
+      shell: bash
+      run: echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_ENV
+      id: extract_branch
+
+    # extract branch name on pull request
+    - name: Print branch name
+      if: github.event_name == 'pull_request'
+      run: echo "BRANCH_NAME=$(echo ${GITHUB_HEAD_REF})" >> $GITHUB_ENV
+
+    - name: Set version
+      run: echo "version=$(echo $version_num-$BRANCH_NAME.${{ github.run_number }})" >> $GITHUB_ENV
+
+    # print branch name and version
+    - name: Get branch name
+      run: |
+        echo 'The branch name is' $BRANCH_NAME
+        echo 'The version is' $version
     - name: Create ndkpath.txt
       run: |
         echo "$ANDROID_NDK_LATEST_HOME" > ${GITHUB_WORKSPACE}/ndkpath.txt
-        cat ${GITHUB_WORKSPACE}/ndkpath.txt
-    #- name: Get QPM
-    #  if: steps.cache-qpm.outputs.cache-hit != 'true'
-    #  uses: dawidd6/action-download-artifact@v2
-    #  with:
-    #    github_token: ${{secrets.GITHUB_TOKEN}}
-    #    workflow: main.yml
-    #    name: QPM-ubuntu-x64
-    #    path: QPM
-    #    repo: sc2ad/QuestPackageManager
-
     - name: Get QPM
       if: steps.cache-qpm.outputs.cache-hit != 'true'
       uses: dawidd6/action-download-artifact@v2
@@ -89,6 +57,7 @@ jobs:
       run: |
         chmod +x ./QPM/qpm-rust
         ./QPM/qpm-rust collapse
+        
     - name: QPM Dependencies Cache
       id: cache-qpm-deps
       uses: actions/cache@v2
@@ -96,7 +65,7 @@ jobs:
         cache-name: cache-qpm-deps
       with:
         path: /home/runner/.local/share/QPM-Rust/cache
-        key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('qpm.json', '.github/BuildMod.yml') }}
+        key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('qpm.json', '.github/BuildQSounds.yml') }}
         restore-keys: |
           ${{ runner.os }}-${{ env.cache-name }}-
           ${{ runner.os }}-${{ env.cache-name }}
@@ -120,7 +89,7 @@ jobs:
         cd ${GITHUB_WORKSPACE}
         ./QPM/qpm-rust package edit --version ${{ env.version }}
         ./QPM/qpm-rust qmod build
-        pwsh -Command ./build.ps1 -actions
+        pwsh -Command ./build.ps1 --actions
     - name: Get Library Name
       id: libname
       run: |
