@@ -130,3 +130,7 @@ jobs:
 
     - name: Upload QMOD
       uses: actions/upload-artifact@v2
+      with:
+        name: ${{ env.module_id }}-(UNZIP-for-QMOD).qmod
+        path: ./${{ env.module_id }}_${{ env.version }}.qmod
+        if-no-files-found: warn
