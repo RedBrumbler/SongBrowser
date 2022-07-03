@@ -99,7 +99,6 @@ jobs:
     - name: Build
       run: |
         cd ${GITHUB_WORKSPACE}
-        ./QPM/qpm-rust package edit --version ${{ env.version }}
         pwsh -Command ./build.ps1 --actions
     - name: Get Library Name
       id: libname
