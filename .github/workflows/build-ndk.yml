@@ -1,5 +1,4 @@
 name: NDK build
-
 on:
   workflow_dispatch:
   push:
@@ -14,10 +13,10 @@ on:
       - '**.md'
       - '.gitignore'
       - '**.zip'
-
 env:
      module_id: SongBrowser
-     version: 0.2.0.${{ github.run_number }}
+     version: 0.1.0-Dev.${{ github.run_number }}
+#     ndkname: android-ndk-r24
     
 jobs:
   build:
@@ -29,9 +28,31 @@ jobs:
       with:
         submodules: true
         lfs: true
-
     - uses: seanmiddleditch/gha-setup-ninja@v3
-
+#    - name: Install Powershell
+#      run: sudo apt-get install -y powershell
+#    - name: Cache Android NDK
+#      id: cache-ndk
+#      uses: actions/cache@v2
+#      env:
+#        cache-name: cache-ndk
+#      with:
+#        path: ndk
+#        key: ${{ runner.os }}-${{ env.cache-name }}-${{ env.ndkname }}
+#        restore-keys: |
+#          ${{ runner.os }}-${{ env.cache-name }}-${{ env.ndkname }}
+    
+#    - name: Install Android NDK
+#      if: steps.cache-ndk.outputs.cache-hit != 'true'
+#      run: |
+#        wget -q -O ndk.zip https://dl.google.com/android/repository/${ndkname}-linux-x86_64.zip
+#        unzip -q ndk.zip
+#        mv ${ndkname} ndk
+      
+#    - name: Create ndkpath.txt
+#      run: |
+#        cd ndk
+#        pwd > ${GITHUB_WORKSPACE}/ndkpath.txt
     - name: Create ndkpath.txt
       run: |
         echo "$ANDROID_NDK_LATEST_HOME" > ${GITHUB_WORKSPACE}/ndkpath.txt
@@ -108,10 +129,5 @@ jobs:
         path: ./build/debug/${{ steps.libname.outputs.NAME }}
         if-no-files-found: error
 
-
     - name: Upload QMOD
       uses: actions/upload-artifact@v2
-      with:
-        name: ${{ env.module_id }}-(UNZIP-for-QMOD).qmod
-        path: ./${{ env.module_id }}_${{ env.version }}.qmod
-        if-no-files-found: warn
