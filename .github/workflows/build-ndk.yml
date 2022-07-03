@@ -14,10 +14,9 @@ on:
       - '.gitignore'
       - '**.zip'
 env:
-     module_id: SongBrowser
+     module_id: songbrowser
      version: 0.1.0-Dev.${{ github.run_number }}
-#     ndkname: android-ndk-r24
-    
+
 jobs:
   build:
     runs-on: ubuntu-22.04
