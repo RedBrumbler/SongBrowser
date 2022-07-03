@@ -1,0 +1,54 @@
+{
+  "_QPVersion": "0.1.1",
+  "name": "SongBrowser",
+  "id": "songbrowser",
+  "author": "RedBrumbler",
+  "version": "1.0.2",
+  "packageId": "com.beatgames.beatsaber",
+  "packageVersion": "1.21.0",
+  "description": "Browsing your songs has never been easier!",
+  "dependencies": [],
+  "modFiles": [],
+  "libraryFiles": [
+    "libandroid-libsong_data_core_rust.so",
+    "libbeatsaber-hook_3_8_1.so"
+  ],
+  "fileCopies": [
+    {
+      "name": "Speed.png",
+      "destination": "/sdcard/ModData/com.beatgames.beatsaber/Mods/SongBrowser/Icons/Speed.png"
+    },
+    {
+      "name": "Graph.png",
+      "destination": "/sdcard/ModData/com.beatgames.beatsaber/Mods/SongBrowser/Icons/Graph.png"
+    },
+    {
+      "name": "X.png",
+      "destination": "/sdcard/ModData/com.beatgames.beatsaber/Mods/SongBrowser/Icons/X.png"
+    },
+    {
+      "name": "StarFull.png",
+      "destination": "/sdcard/ModData/com.beatgames.beatsaber/Mods/SongBrowser/Icons/StarFull.png"
+    },
+    {
+      "name": "DeleteIcon.png",
+      "destination": "/sdcard/ModData/com.beatgames.beatsaber/Mods/SongBrowser/Icons/DeleteIcon.png"
+    },
+    {
+      "name": "DoubleArrow.png",
+      "destination": "/sdcard/ModData/com.beatgames.beatsaber/Mods/SongBrowser/Icons/DoubleArrow.png"
+    },
+    {
+      "name": "RandomIcon.png",
+      "destination": "/sdcard/ModData/com.beatgames.beatsaber/Mods/SongBrowser/Icons/RandomIcon.png"
+    },
+    {
+      "name": "NoteStartOffset.png",
+      "destination": "/sdcard/ModData/com.beatgames.beatsaber/Mods/SongBrowser/Icons/NoteStartOffset.png"
+    },
+    {
+      "name": "PlaylistIcon.png",
+      "destination": "/sdcard/ModData/com.beatgames.beatsaber/Mods/SongBrowser/Icons/PlaylistIcon.png"
+    }
+  ]
+}
